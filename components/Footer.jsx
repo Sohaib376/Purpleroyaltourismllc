@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram } from 'lucide-react';
 
 const footerLinks = {
   services: [
@@ -36,7 +36,7 @@ export default function Footer() {
               <img 
                 src="https://purpleroyaltourism.com/wp-content/uploads/2024/07/SIGH-148-x-40-px.svg" 
                 alt="Purple Royal Tourism" 
-                className="h-10 w-auto brightness-0 invert"
+                className="h-8 w-auto brightness-0 invert"
               />
             </div>
             <p className="text-gray-400 text-sm mb-4">
@@ -98,18 +98,25 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-            {/* Social Links */}
+            {/* Social Links - Only Instagram & Facebook */}
             <div className="mt-6">
               <h4 className="font-semibold mb-3">Follow Us</h4>
               <div className="flex gap-3">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-[#0cc0df] transition-colors">
-                  <Facebook size={18} />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-[#0cc0df] transition-colors">
+                <a 
+                  href="https://www.instagram.com/purpleroyaltourism/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-br hover:from-purple-600 hover:via-pink-500 hover:to-orange-400 transition-all"
+                >
                   <Instagram size={18} />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-[#0cc0df] transition-colors">
-                  <Twitter size={18} />
+                <a 
+                  href="https://www.facebook.com/PurpleRoyalTourism.ae" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-[#1877F2] transition-colors"
+                >
+                  <Facebook size={18} />
                 </a>
               </div>
             </div>
