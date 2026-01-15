@@ -69,9 +69,13 @@ export default function AdminPage() {
         fetch('/api/admin/activities')
       ]);
       
-      setLeads(Array.isArray(await leadsRes.json().catch(() => [])) ? await leadsRes.clone().json() : []);
-      setPosts(Array.isArray(await postsRes.json().catch(() => [])) ? await postsRes.clone().json() : []);
-      setActivities(Array.isArray(await activitiesRes.json().catch(() => [])) ? await activitiesRes.clone().json() : []);
+      const leadsData = await leadsRes.json().catch(() => []);
+      const postsData = await postsRes.json().catch(() => []);
+      const activitiesData = await activitiesRes.json().catch(() => []);
+      
+      setLeads(Array.isArray(leadsData) ? leadsData : []);
+      setPosts(Array.isArray(postsData) ? postsData : []);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : []);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
