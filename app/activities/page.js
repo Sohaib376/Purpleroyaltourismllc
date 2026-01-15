@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Search, MessageCircle, Clock, MapPin, Tag } from 'lucide-react';
+import { Search, Clock, MapPin } from 'lucide-react';
 import Breadcrumb from '@/components/Breadcrumb';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const categories = ['All', 'Adventure', 'Landmarks', 'Cruises', 'City Tours', 'Theme Parks', 'Attractions', 'Entertainment', 'Museums'];
 
