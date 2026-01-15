@@ -1,104 +1,206 @@
-import { MongoClient } from 'mongodb'
-import { v4 as uuidv4 } from 'uuid'
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { v4 as uuidv4 } from 'uuid';
 
-// MongoDB connection
-let client
-let db
-
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
-  }
-  return db
+// Helper to get path from request
+function getPath(request) {
+  const url = new URL(request.url);
+  const path = url.pathname.replace('/api', '') || '/';
+  return path;
 }
 
-// Helper function to handle CORS
-function handleCORS(response) {
-  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.headers.set('Access-Control-Allow-Credentials', 'true')
-  return response
+// Helper for CORS headers
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
 }
 
-// OPTIONS handler for CORS
 export async function OPTIONS() {
-  return handleCORS(new NextResponse(null, { status: 200 }))
+  return NextResponse.json({}, { headers: corsHeaders() });
 }
 
-// Route handler function
-async function handleRoute(request, { params }) {
-  const { path = [] } = params
-  const route = `/${path.join('/')}`
-  const method = request.method
+export async function GET(request) {
+  const path = getPath(request);
+  const { db } = await connectToDatabase();
 
   try {
-    const db = await connectToMongo()
-
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
-    }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+    // Root endpoint
+    if (path === '/' || path === '') {
+      return NextResponse.json({ message: 'Purple Royal Tourism API', status: 'running' }, { headers: corsHeaders() });
     }
 
-    // Status endpoints - POST /api/status
-    if (route === '/status' && method === 'POST') {
-      const body = await request.json()
-      
-      if (!body.client_name) {
-        return handleCORS(NextResponse.json(
-          { error: "client_name is required" }, 
-          { status: 400 }
-        ))
+    // Get all leads (admin)
+    if (path === '/leads') {
+      const leads = await db.collection('leads').find({}).sort({ createdAt: -1 }).toArray();
+      return NextResponse.json(leads, { headers: corsHeaders() });
+    }
+
+    // Get all blog posts
+    if (path === '/blog') {
+      const posts = await db.collection('blog_posts').find({ published: true }).sort({ createdAt: -1 }).toArray();
+      return NextResponse.json(posts, { headers: corsHeaders() });
+    }
+
+    // Get all blog posts (admin - including unpublished)
+    if (path === '/admin/blog') {
+      const posts = await db.collection('blog_posts').find({}).sort({ createdAt: -1 }).toArray();
+      return NextResponse.json(posts, { headers: corsHeaders() });
+    }
+
+    // Get single blog post by slug
+    if (path.startsWith('/blog/')) {
+      const slug = path.replace('/blog/', '');
+      const post = await db.collection('blog_posts').findOne({ slug, published: true });
+      if (!post) {
+        return NextResponse.json({ error: 'Post not found' }, { status: 404, headers: corsHeaders() });
       }
-
-      const statusObj = {
-        id: uuidv4(),
-        client_name: body.client_name,
-        timestamp: new Date()
-      }
-
-      await db.collection('status_checks').insertOne(statusObj)
-      return handleCORS(NextResponse.json(statusObj))
+      return NextResponse.json(post, { headers: corsHeaders() });
     }
 
-    // Status endpoints - GET /api/status
-    if (route === '/status' && method === 'GET') {
-      const statusChecks = await db.collection('status_checks')
-        .find({})
-        .limit(1000)
-        .toArray()
-
-      // Remove MongoDB's _id field from response
-      const cleanedStatusChecks = statusChecks.map(({ _id, ...rest }) => rest)
-      
-      return handleCORS(NextResponse.json(cleanedStatusChecks))
-    }
-
-    // Route not found
-    return handleCORS(NextResponse.json(
-      { error: `Route ${route} not found` }, 
-      { status: 404 }
-    ))
+    return NextResponse.json({ error: 'Not found' }, { status: 404, headers: corsHeaders() });
 
   } catch (error) {
-    console.error('API Error:', error)
-    return handleCORS(NextResponse.json(
-      { error: "Internal server error" }, 
-      { status: 500 }
-    ))
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders() });
   }
 }
 
-// Export all HTTP methods
-export const GET = handleRoute
-export const POST = handleRoute
-export const PUT = handleRoute
-export const DELETE = handleRoute
-export const PATCH = handleRoute
+export async function POST(request) {
+  const path = getPath(request);
+  const { db } = await connectToDatabase();
+
+  try {
+    const body = await request.json();
+
+    // Submit lead
+    if (path === '/leads') {
+      const lead = {
+        id: uuidv4(),
+        name: body.name,
+        phone: body.phone,
+        service: body.service,
+        travelDate: body.travelDate || null,
+        source: body.source || 'website',
+        status: 'new',
+        createdAt: new Date().toISOString(),
+      };
+
+      await db.collection('leads').insertOne(lead);
+      return NextResponse.json({ success: true, lead }, { status: 201, headers: corsHeaders() });
+    }
+
+    // Create blog post (admin)
+    if (path === '/admin/blog') {
+      const post = {
+        id: uuidv4(),
+        title: body.title,
+        slug: body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        content: body.content,
+        excerpt: body.excerpt || body.content.substring(0, 150) + '...',
+        category: body.category || 'Travel Tips',
+        image: body.image || 'https://images.unsplash.com/photo-1598343530164-8f8922e123ba',
+        published: body.published || false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await db.collection('blog_posts').insertOne(post);
+      return NextResponse.json({ success: true, post }, { status: 201, headers: corsHeaders() });
+    }
+
+    // Admin login
+    if (path === '/admin/login') {
+      const adminPassword = process.env.ADMIN_PASSWORD || 'PurpleRoyal2024!';
+      if (body.password === adminPassword) {
+        return NextResponse.json({ success: true, token: 'admin-authenticated' }, { headers: corsHeaders() });
+      }
+      return NextResponse.json({ error: 'Invalid password' }, { status: 401, headers: corsHeaders() });
+    }
+
+    return NextResponse.json({ error: 'Not found' }, { status: 404, headers: corsHeaders() });
+
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders() });
+  }
+}
+
+export async function PUT(request) {
+  const path = getPath(request);
+  const { db } = await connectToDatabase();
+
+  try {
+    const body = await request.json();
+
+    // Update blog post
+    if (path.startsWith('/admin/blog/')) {
+      const id = path.replace('/admin/blog/', '');
+      const updateData = {
+        ...body,
+        updatedAt: new Date().toISOString(),
+      };
+      delete updateData.id;
+      delete updateData._id;
+
+      const result = await db.collection('blog_posts').updateOne(
+        { id },
+        { $set: updateData }
+      );
+
+      if (result.matchedCount === 0) {
+        return NextResponse.json({ error: 'Post not found' }, { status: 404, headers: corsHeaders() });
+      }
+
+      return NextResponse.json({ success: true }, { headers: corsHeaders() });
+    }
+
+    // Update lead status
+    if (path.startsWith('/leads/')) {
+      const id = path.replace('/leads/', '');
+      const result = await db.collection('leads').updateOne(
+        { id },
+        { $set: { status: body.status, updatedAt: new Date().toISOString() } }
+      );
+
+      if (result.matchedCount === 0) {
+        return NextResponse.json({ error: 'Lead not found' }, { status: 404, headers: corsHeaders() });
+      }
+
+      return NextResponse.json({ success: true }, { headers: corsHeaders() });
+    }
+
+    return NextResponse.json({ error: 'Not found' }, { status: 404, headers: corsHeaders() });
+
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders() });
+  }
+}
+
+export async function DELETE(request) {
+  const path = getPath(request);
+  const { db } = await connectToDatabase();
+
+  try {
+    // Delete blog post
+    if (path.startsWith('/admin/blog/')) {
+      const id = path.replace('/admin/blog/', '');
+      const result = await db.collection('blog_posts').deleteOne({ id });
+
+      if (result.deletedCount === 0) {
+        return NextResponse.json({ error: 'Post not found' }, { status: 404, headers: corsHeaders() });
+      }
+
+      return NextResponse.json({ success: true }, { headers: corsHeaders() });
+    }
+
+    return NextResponse.json({ error: 'Not found' }, { status: 404, headers: corsHeaders() });
+
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: corsHeaders() });
+  }
+}
