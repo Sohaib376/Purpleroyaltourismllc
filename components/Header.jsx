@@ -51,14 +51,12 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#0cc0df] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">P</span>
-            </div>
-            <div>
-              <span className="font-bold text-lg text-gray-900">Purple Royal</span>
-              <span className="block text-xs text-gray-500">Tourism</span>
-            </div>
+          <Link href="/" className="flex items-center">
+            <img 
+              src="https://purpleroyaltourism.com/wp-content/uploads/2024/07/SIGH-148-x-40-px.svg" 
+              alt="Purple Royal Tourism" 
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
