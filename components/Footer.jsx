@@ -32,14 +32,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-[#0cc0df] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
-              </div>
-              <div>
-                <span className="font-bold text-lg">Purple Royal</span>
-                <span className="block text-xs text-gray-400">Tourism</span>
-              </div>
+            <div className="mb-4">
+              <img 
+                src="https://purpleroyaltourism.com/wp-content/uploads/2024/07/SIGH-148-x-40-px.svg" 
+                alt="Purple Royal Tourism" 
+                className="h-10 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-gray-400 text-sm mb-4">
               Your trusted partner for visa services, Umrah packages, and unforgettable Dubai experiences.
