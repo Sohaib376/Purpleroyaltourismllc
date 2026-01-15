@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta
 
 # Base URL from environment - using the production URL
-BASE_URL = "https://visaexpress-dubai.preview.emergentagent.com/api"
+BASE_URL = "https://travelpro-visa.preview.emergentagent.com/api"
 
 def print_test_result(test_name, success, details=""):
     """Print formatted test results"""
