@@ -178,9 +178,9 @@ export default function ActivitiesPage() {
                       href={activity.whatsapp_link || `https://wa.me/971565330500?text=Hi,%20I%20want%20to%20book%20activity%20${activity.tour_code}%20-%20${activity.title}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 w-full bg-[#0cc0df] text-white text-xs px-4 py-2.5 rounded-full font-medium hover:bg-cyan-600 transition"
+                      className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white text-xs px-4 py-2.5 rounded-full font-medium hover:bg-[#20bd5a] transition"
                     >
-                      <MessageCircle size={14} />
+                      <WhatsAppIcon size={16} />
                       Book on WhatsApp
                     </a>
                   </div>
