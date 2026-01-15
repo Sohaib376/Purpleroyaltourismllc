@@ -140,17 +140,14 @@ export default function ActivitiesPage() {
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     {/* Category Badge */}
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded font-medium">
+                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs px-2.5 py-1 rounded-full font-medium">
                       {activity.category}
-                    </div>
-                    {/* Tour Code Badge */}
-                    <div className="absolute top-2 right-2 bg-gray-900/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded font-mono">
-                      #{activity.tour_code}
                     </div>
                     {/* Featured Badge */}
                     {activity.featured && (
-                      <div className="absolute bottom-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded font-medium">
+                      <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                         ⭐ Featured
                       </div>
                     )}
