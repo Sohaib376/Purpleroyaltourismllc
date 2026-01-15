@@ -55,7 +55,7 @@ export default function Header() {
             <img 
               src="https://purpleroyaltourism.com/wp-content/uploads/2024/07/SIGH-148-x-40-px.svg" 
               alt="Purple Royal Tourism" 
-              className="h-10 w-auto"
+              className="h-8 sm:h-9 w-auto"
             />
           </Link>
 
