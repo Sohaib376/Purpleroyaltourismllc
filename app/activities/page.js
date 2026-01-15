@@ -204,7 +204,7 @@ export default function ActivitiesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 px-6 bg-gradient-to-r from-[#0cc0df] to-cyan-600">
+      <section className="py-12 px-6 bg-gradient-to-r from-[#25D366] to-[#128C7E]">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Can't find what you're looking for?</h2>
           <p className="text-white/90 mb-6">We offer 100+ activities across Dubai and UAE. Contact us for custom packages.</p>
@@ -212,9 +212,9 @@ export default function ActivitiesPage() {
             href="https://wa.me/971565330500?text=Hi,%20I%20am%20looking%20for%20a%20custom%20activity%20package"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
+            className="inline-flex items-center gap-3 bg-white text-[#25D366] px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition shadow-lg"
           >
-            <MessageCircle size={20} />
+            <WhatsAppIcon size={22} />
             Chat with Us
           </a>
         </div>
