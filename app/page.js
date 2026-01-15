@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, MessageCircle, Send, CheckCircle, Clock, Plane, FileCheck, Shield, Users, Star, Zap, Award, Headphones } from 'lucide-react';
 import { blogPosts } from '@/lib/data';
+import WhatsAppIcon from '@/components/WhatsAppIcon';
 
 const services = [
   { emoji: '🌍', title: 'International Visa', href: '/visa/international', desc: 'UK, USA, Schengen & more' },
